@@ -3,88 +3,42 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>PAGANIX</title>
+    <title>PAGANIX - Tienda Online</title>
     <link rel="stylesheet" href="styles.css" />
-    <script src="script.js"></script>
   </head>
   <body>
-    <!-- Header -->
     <header>
+      <h1>PAGANIX</h1>
       <nav>
-        <h1>PAGANIX</h1>
-        <ul>
-          <li><a href="#inicio">Inicio</a></li>
-          <li><a href="#productos">Productos</a></li>
-          <li><a href="#nosotros">Nosotros</a></li>
-          <li><a href="#contacto">Contacto</a></li>
-        </ul>
+        <a href="#productos">Productos</a>
+        <a href="#carrito">Carrito</a>
+        <a href="#contacto">Contacto</a>
       </nav>
     </header>
 
-    <!-- Contenido principal -->
     <main>
-      <section id="inicio">
-        <h2>The New Wave</h2>
-        <p>Encontrá la mejor indumentaria para toda las ocasión.</p>
-      </section>
-
+      <!-- Sección de productos -->
       <section id="productos">
         <h2>Nuestros Productos</h2>
-        <article>
-          <h3>Remera Clásica</h3>
-          <img src="img/remera.jpg" alt="remera" />
-          <p>Remera ysy a Lifestyle.</p>
-          <button>Comprar</button>
-        </article>
-        <article>
-          <h3>Pantalón Deportivo</h3>
-          <img src="img/pantalon.jpg" alt="cargo negro" />
-          <p>Pantalón loyal negro.</p>
-          <button>Comprar</button>
-        </article>
-        <article>
-          <h3>Buzo artic</h3>
-          <img src="img/buzo.jpg" alt="Buzo" />
-          <p>Buzo negro</p>
-          <button>Comprar</button>
-        </article>
-        <h3>
-          <article>
-            Sweater
-            <img src="img/sweater.jpg" alt="Sweater" />
-            <p>Sweater Volatil</p>
-            <button>Comprar</button>
-          </article>
-        </h3>
+        <div id="contenedor-productos" class="grid-productos">
+          <!-- Los productos se cargan desde script.js -->
+        </div>
       </section>
 
-      <section id="nosotros">
-        <h2>Sobre Nosotros</h2>
-        <p>Planteamos nuevas ideas para vestirte en tu día a día.</p>
-      </section>
-
-      <section id="contacto">
-        <h2>Contacto</h2>
-        <form action="#" method="post">
-          <label for="nombre">Nombre:</label>
-          <input type="text" id="nombre" name="nombre" required />
-
-          <label for="email">Email:</label>
-          <input type="email" id="email" name="email" required />
-
-          <label for="mensaje">Mensaje:</label>
-          <textarea id="mensaje" name="mensaje"></textarea>
-
-          <button type="submit">Enviar</button>
-        </form>
+      <!-- Sección carrito -->
+      <section id="carrito">
+        <h2>Carrito</h2>
+        <div id="carrito-contenedor"></div>
+        <p><strong>Total:</strong> $<span id="total-precio">0</span></p>
       </section>
     </main>
 
-    <!-- Footer -->
-    <footer>
-      <p>
-        &copy; 2025 PAGANIX desde Luján, BS.AS. . Todos los derechos reservados.
-      </p>
+    <footer id="contacto">
+      <p>📍 Luján, Buenos Aires - Argentina</p>
+      <p>📧 paganix@tienda.com</p>
+      <p>© 2025 PAGANIX - Todos los derechos reservados.</p>
     </footer>
+
+    <script src="script.js"></script>
   </body>
 </html>
