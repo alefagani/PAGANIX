@@ -1,96 +1,140 @@
-// ==== ARRAY DE PRODUCTOS ====
-const productos = [
-  { id: 1, nombre: "Sweater", precio: 12000, img: "img/sweater.jpg" },
-  { id: 2, nombre: "Remera", precio: 8000, img: "img/remera.jpg" },
-  { id: 3, nombre: "Pantalón", precio: 15000, img: "img/pantalon.jpg" },
-  { id: 4, nombre: "Buzo", precio: 14000, img: "img/buzo.jpg" },
-];
+// ==== VARIABLES Y CONSTANTES ====
+const contenedorProductos = document.getElementById("productos");
+const contenedorCarrito = document.getElementById("carrito");
 
-// ==== CARRITO ====
 let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
 
-// ==== MOSTRAR PRODUCTOS EN HTML ====
-const contenedorProductos = document.getElementById("productos");
+// ==== CARGAR PRODUCTOS DESDE JSON ====
+async function cargarProductos() {
+  try {
+    const respuesta = await fetch("data/productos.json");
+    const productos = await respuesta.json();
 
-function mostrarProductos() {
-  contenedorProductos.innerHTML = `
-    <h2>🛍️ Nuestros Productos</h2>
-    <div class="grid-productos">
-      ${productos
-        .map(
-          (prod) => `
-        <div class="producto">
-          <img src="${prod.img}" alt="${prod.nombre}">
-          <h3>${prod.nombre}</h3>
-          <p>Precio: $${prod.precio}</p>
-          <button onclick="agregarAlCarrito(${prod.id})">Agregar al carrito</button>
-        </div>
-      `
-        )
-        .join("")}
-    </div>
-  `;
+    mostrarProductos(productos);
+  } catch (error) {
+    console.error("Error al cargar productos:", error);
+  }
 }
 
-mostrarProductos();
+// ==== MOSTRAR PRODUCTOS EN HTML ====
+function mostrarProductos(productos) {
+  contenedorProductos.innerHTML = "";
 
-// ==== AGREGAR AL CARRITO ====
-function agregarAlCarrito(id) {
+  productos.forEach((producto) => {
+    const div = document.createElement("div");
+    div.classList.add("producto");
+    div.innerHTML = `
+      <img src="${producto.imagen}" alt="${producto.nombre}">
+      <h3>${producto.nombre}</h3>
+      <p>$${producto.precio}</p>
+      <button onclick="agregarAlCarrito(${producto.id})">Agregar al carrito</button>
+    `;
+    contenedorProductos.appendChild(div);
+  });
+}
+
+// ==== AGREGAR PRODUCTO AL CARRITO ====
+async function agregarAlCarrito(id) {
+  const respuesta = await fetch("data/productos.json");
+  const productos = await respuesta.json();
+
   const producto = productos.find((p) => p.id === id);
-  carrito.push(producto);
+
+  const existente = carrito.find((item) => item.id === producto.id);
+
+  if (existente) {
+    existente.cantidad++;
+  } else {
+    carrito.push({ ...producto, cantidad: 1 });
+  }
+
   guardarCarrito();
   mostrarCarrito();
 }
 
 // ==== MOSTRAR CARRITO ====
-const contenedorCarrito = document.getElementById("carrito");
-
 function mostrarCarrito() {
+  contenedorCarrito.innerHTML = "";
+
   if (carrito.length === 0) {
-    contenedorCarrito.innerHTML = "<p>El carrito está vacío 🛒</p>";
+    contenedorCarrito.innerHTML = "<p>El carrito está vacío</p>";
     return;
   }
 
-  contenedorCarrito.innerHTML = `
-    <div id="carrito-contenedor">
-      ${carrito
-        .map(
-          (item, index) => `
-        <div class="item-carrito">
-          <p>${item.nombre} - $${item.precio}</p>
-          <button class="btn-eliminar" onclick="eliminarDelCarrito(${index})">❌</button>
-        </div>
-      `
-        )
-        .join("")}
-    </div>
-    <p><strong>Total: $${calcularTotal()}</strong></p>
-    <button onclick="vaciarCarrito()" class="btn-vaciar">Vaciar carrito</button>
-  `;
-}
+  carrito.forEach((item) => {
+    const div = document.createElement("div");
+    div.classList.add("item-carrito");
+    div.innerHTML = `
+      <span>${item.nombre} (${item.cantidad})</span>
+      <span>$${item.precio * item.cantidad}</span>
+    `;
+    contenedorCarrito.appendChild(div);
+  });
 
-mostrarCarrito();
+  const total = carrito.reduce(
+    (acc, item) => acc + item.precio * item.cantidad,
+    0
+  );
 
-// ==== ELIMINAR PRODUCTO DEL CARRITO ====
-function eliminarDelCarrito(index) {
-  carrito.splice(index, 1);
-  guardarCarrito();
-  mostrarCarrito();
-}
+  const totalDiv = document.createElement("div");
+  totalDiv.classList.add("item-carrito");
+  totalDiv.innerHTML = `<strong>Total:</strong> <strong>$${total}</strong>`;
+  contenedorCarrito.appendChild(totalDiv);
 
-// ==== VACIAR CARRITO ====
-function vaciarCarrito() {
-  carrito = [];
-  guardarCarrito();
-  mostrarCarrito();
-}
-
-// ==== CALCULAR TOTAL ====
-function calcularTotal() {
-  return carrito.reduce((acc, item) => acc + item.precio, 0);
+  // ==== BOTÓN FINALIZAR COMPRA ====
+  const finalizarBtn = document.createElement("button");
+  finalizarBtn.textContent = "Finalizar compra";
+  finalizarBtn.classList.add("btn-finalizar");
+  finalizarBtn.onclick = finalizarCompra;
+  contenedorCarrito.appendChild(finalizarBtn);
 }
 
 // ==== GUARDAR EN LOCALSTORAGE ====
 function guardarCarrito() {
   localStorage.setItem("carrito", JSON.stringify(carrito));
+}
+
+// ==== VACIAR CARRITO ====
+function vaciarCarrito() {
+  if (confirm("¿Seguro que querés vaciar el carrito?")) {
+    carrito = [];
+    guardarCarrito();
+    mostrarCarrito();
+  }
+}
+
+// ==== INICIALIZAR ====
+cargarProductos();
+mostrarCarrito();
+function finalizarCompra() {
+  if (carrito.length === 0) {
+    mostrarMensaje("Tu carrito está vacío.", false);
+    return;
+  }
+
+  const confirmar = confirm("¿Deseás finalizar la compra?");
+  if (confirmar) {
+    carrito = [];
+    guardarCarrito();
+    mostrarCarrito();
+    mostrarMensaje(
+      "✅ ¡Compra realizada con éxito! Gracias por elegir PAGANIX 🖤",
+      true
+    );
+  }
+  function mostrarMensaje(texto, exito = true) {
+    const mensajeDiv = document.getElementById("mensaje-compra");
+    mensajeDiv.textContent = texto;
+
+    // Estilo según el tipo de mensaje
+    mensajeDiv.style.backgroundColor = exito
+      ? "rgba(0, 200, 0, 0.9)"
+      : "rgba(200, 0, 0, 0.9)";
+    mensajeDiv.classList.add("visible");
+
+    // Ocultar automáticamente después de 3 segundos
+    setTimeout(() => {
+      mensajeDiv.classList.remove("visible");
+    }, 3000);
+  }
 }

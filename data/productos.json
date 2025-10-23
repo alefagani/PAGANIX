@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "nombre": "Buzo Paganix",
+    "precio": 25000,
+    "imagen": "img/buzo.jpg"
+  },
+  {
+    "id": 2,
+    "nombre": "Remera Paganix",
+    "precio": 15000,
+    "imagen": "img/remera.jpg"
+  },
+  {
+    "id": 3,
+    "nombre": "Pantalón Paganix",
+    "precio": 28000,
+    "imagen": "img/pantalon.jpg"
+  },
+  {
+    "id": 4,
+    "nombre": "Sweater Paganix",
+    "precio": 32000,
+    "imagen": "img/sweater.jpg"
+  }
+]
